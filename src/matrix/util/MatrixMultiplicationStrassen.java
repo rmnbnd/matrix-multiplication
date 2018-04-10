@@ -51,7 +51,7 @@ public class MatrixMultiplicationStrassen {
 
         @Override
         protected int[][] compute() {
-            if (n == 1) {
+            if (n <= 64) {
                 return MatrixMultiplicationSimple.multiply(a, b, n);
             }
 

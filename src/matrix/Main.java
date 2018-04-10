@@ -8,13 +8,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Main class for running matrix multiplication (simple implementation and strassen with forkjoin)
+ * Main class for running matrix multiplication (simple implementation with threads and strassen with forkjoin)
  */
 public class Main {
 
     private static final int MIN = 1;
     private static final int MAX = 50;
-    private static final int DIMENSION = 100;
+    private static final int DIMENSION = 1024;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         // generate matrix
@@ -28,6 +28,13 @@ public class Main {
 
         System.out.println("simple - " + (finish - start) / 1000000000.0 + " secs");
 
+        // simple multiplication
+        start = System.nanoTime();
+        int[][] simpleThreadResult = MatrixMultiplicationSimple.multiplyFuture(matrixA, matrixB, DIMENSION);
+        finish = System.nanoTime();
+
+        System.out.println("simple thread - " + (finish - start) / 1000000000.0 + " secs");
+
         // strassen multiplication
         start = System.nanoTime();
         int[][] strassenResult = MatrixMultiplicationStrassen.forkJoin(matrixA, matrixB, DIMENSION);
@@ -37,6 +44,8 @@ public class Main {
 
         // check results
         System.out.println("matrices are equal: " + Arrays.deepEquals(strassenResult, simpleResult));
+        System.out.println("matrices are equal: " + Arrays.deepEquals(simpleThreadResult, simpleResult));
+        System.out.println("matrices are equal: " + Arrays.deepEquals(simpleThreadResult, strassenResult));
     }
 
     private static int[][] generateMatrix(int dimension) {
